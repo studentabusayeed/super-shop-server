@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 
+
 const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUPERSHOP_PASSWORD}@cluster0.0tyialj.mongodb.net/?retryWrites=true&w=majority`;
 
 const databaseConnect = async () => {
