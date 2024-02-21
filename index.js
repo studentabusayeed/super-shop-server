@@ -10,8 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 
-
-const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUPERSHOP_PASSWORD}@cluster0.0tyialj.mongodb.net/?retryWrites=true&w=majority`;
+const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUPERSHOP_PASSWORD}@cluster0.lmwybt8.mongodb.net/?retryWrites=true&w=majority`;
 
 const databaseConnect = async () => {
   try {
@@ -30,7 +29,11 @@ const databaseConnect = async () => {
 databaseConnect();
 
 
+// Routes function
+const sellSchema = require("./routeHandler/sellProductHandler");
 
+// application routes
+app.use("/sellProduct", sellSchema);
 
 
 app.get("/", (req, res) => {
