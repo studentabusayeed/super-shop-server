@@ -31,9 +31,16 @@ databaseConnect();
 
 // Routes function
 const sellSchema = require("./routeHandler/sellProductHandler");
+const orderSchema = require("./routeHandler/orderProductHandler");
+
+
+app.get("/", (req, res) => {
+  res.send("SuperShop. Unlock your code knowledge");
+});
 
 // application routes
 app.use("/sellProduct", sellSchema);
+app.use("/orderProduct", orderSchema);
 
 
 app.get("/", (req, res) => {
