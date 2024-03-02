@@ -4,10 +4,11 @@ const sellSchema = mongoose.Schema({
     name: String,
     quantity: String,
     price: String,
-    date: Date,
+    sellingDate: Date,
     category: String,
     productCode: String,
     image: String,
+    email: String
 })
 
 module.exports = sellSchema;
