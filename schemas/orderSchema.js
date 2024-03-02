@@ -8,6 +8,7 @@ const orderSchema = mongoose.Schema({
     category: String,
     productCode: String,
     image: String,
+    status: String
 })
 
 module.exports = orderSchema;

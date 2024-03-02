@@ -6,6 +6,8 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 require('colors')
+
+// middleware
 app.use(cors());
 app.use(express.json());
 
@@ -32,6 +34,7 @@ databaseConnect();
 // Routes function
 const sellSchema = require("./routeHandler/sellProductHandler");
 const orderSchema = require("./routeHandler/orderProductHandler");
+const userHandler = require("./routeHandler/userHandler");
 
 
 app.get("/", (req, res) => {
@@ -41,6 +44,7 @@ app.get("/", (req, res) => {
 // application routes
 app.use("/sellProduct", sellSchema);
 app.use("/orderProduct", orderSchema);
+app.use("/user", userHandler);
 
 
 app.get("/", (req, res) => {
