@@ -22,6 +22,14 @@ const databaseConnect = async () => {
       // serverSelectionTimeoutMS: 30000,
     });
 
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "72h",
+      });
+      res.send({ token });
+    });
+
     console.log("Database connection successful".cyan.underline);
   } catch (error) {
     console.log(error.message);

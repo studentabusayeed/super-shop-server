@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const userSchema = require("../schemas/userSchema");
 const UserInfo = new mongoose.model("User", userSchema);
+const verifyLogin = require("../middlewares/verifyLogin");
 
 
-router.get('/', async (req, res) => {
+router.get('/', verifyLogin, async (req, res) => {
     await UserInfo.find().sort({ data: 'desc' }).then((data) => {
         res.json(data);
     }).catch(err => {

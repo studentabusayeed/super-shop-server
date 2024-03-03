@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const orderSchema = require('../schemas/orderSchema');
 const OrderProduct = new mongoose.model("OrderProduct", orderSchema);
+const verifyLogin = require("../middlewares/verifyLogin");
 
 
 router.get('/', async (req, res) => {
