@@ -7,7 +7,7 @@ const verifyLogin = require("../middlewares/verifyLogin");
 
 
 router.get('/', async (req, res) => {
-    await OrderProduct.find().sort({data: 'desc'}).then((data) => {
+    await OrderProduct.find().sort({ deliveryDate: 1 }).then((data) => {
         res.json(data)
     }).catch(err => {
         console.log(err);
@@ -33,6 +33,27 @@ router.post('/', async (req, res) => {
         }
     })
 });
+
+router.patch('/:id', async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new Object(id) };
+    const updatedDoc = {
+        $set: {
+            status: 'completed'
+        }
+    };
+    await OrderProduct.updateOne(filter, updatedDoc).then(() => {
+        res.status(200).json({
+            message: 'success'
+        })
+    }).catch((err) =>{
+        console.log(err);
+        res.status(500).json({
+            message: 'error'
+        })
+    })
+
+})
 
 
 module.exports = router;

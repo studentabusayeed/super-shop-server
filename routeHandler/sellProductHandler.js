@@ -7,7 +7,7 @@ const verifyLogin = require("../middlewares/verifyLogin");
 
 
 router.get('/', async (req, res) => {
-    await SellProduct.find().sort({data: 'desc'}).then((data) => {
+    await SellProduct.find().sort({ sellingDate: -1 }).then((data) => {
         res.json(data)
     }).catch(err => {
         console.log(err);
