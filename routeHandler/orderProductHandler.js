@@ -17,6 +17,19 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new Object(id) };
+    await OrderProduct.findOne(query).sort({ deliveryDate: 1 }).then((data) => {
+        res.json(data)
+    }).catch(err => {
+        console.log(err);
+        res.json({
+            message: "error"
+        })
+    })
+})
+
 router.post('/', async (req, res) => {
     const NewOrderPorduct = new OrderProduct(req.body);
     await NewOrderPorduct.save().then((data) => {
@@ -46,13 +59,28 @@ router.patch('/:id', async (req, res) => {
         res.status(200).json({
             message: 'success'
         })
-    }).catch((err) =>{
+    }).catch((err) => {
         console.log(err);
         res.status(500).json({
             message: 'error'
         })
     })
 
+})
+
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new Object(id) };
+    await OrderProduct.deleteOne(query).then(() => {
+        res.status(200).json({
+            message: 'item deleted'
+        })
+    }).catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            message: 'error'
+        })
+    })
 })
 
 
