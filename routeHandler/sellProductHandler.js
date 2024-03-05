@@ -16,6 +16,18 @@ router.get('/', async (req, res) => {
         })
     })
 })
+router.get('/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = {_id: new Object(id)};
+    await SellProduct.findOne(query).sort({ sellingDate: -1 }).then((data) => {
+        res.json(data)
+    }).catch(err => {
+        console.log(err);
+        res.json({
+            message: "error"
+        })
+    })
+})
 
 router.post('/', async (req, res) => {
     const NewSellProduct = new SellProduct(req.body);
@@ -33,6 +45,23 @@ router.post('/', async (req, res) => {
         }
     })
 });
+
+router.delete('/:id', async(req,res) =>{
+    const id = req.params.id;
+    const query = {_id: new Object(id)}
+    await SellProduct.deleteOne(query).then(() =>{
+        res.status(200).json({
+            message: 'item deleted'
+        })
+    }).catch((err) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({
+                message: 'error'
+            })
+        }
+    })
+})
 
 
 module.exports = router;
