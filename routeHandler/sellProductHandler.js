@@ -7,18 +7,27 @@ const verifyLogin = require("../middlewares/verifyLogin");
 
 
 router.get('/', async (req, res) => {
-    await SellProduct.find().sort({ sellingDate: -1 }).then((data) => {
-        res.json(data)
-    }).catch(err => {
-        console.log(err);
-        res.json({
-            message: "error"
-        })
-    })
+    try {
+        const page = parseInt(req.query.page) || 0;
+        const itemsPerPage = parseInt(req.query.itemsPerPage) || 3;
+
+        // calculate the skip value
+        const skip = page * itemsPerPage;
+
+        // Total number of blogs
+        const totalCount = await SellProduct.countDocuments();
+
+        const data = await SellProduct.find().skip(skip).limit(itemsPerPage).sort({ sellingDate: -1 });
+        res.json({ data, totalCount });
+    } catch (err) {
+        res.status(500).json({
+            message: "error",
+        });
+    }
 })
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
-    const query = {_id: new Object(id)};
+    const query = { _id: new Object(id) };
     await SellProduct.findOne(query).sort({ sellingDate: -1 }).then((data) => {
         res.json(data)
     }).catch(err => {
@@ -46,10 +55,10 @@ router.post('/', async (req, res) => {
     })
 });
 
-router.delete('/:id', async(req,res) =>{
+router.delete('/:id', async (req, res) => {
     const id = req.params.id;
-    const query = {_id: new Object(id)}
-    await SellProduct.deleteOne(query).then(() =>{
+    const query = { _id: new Object(id) }
+    await SellProduct.deleteOne(query).then(() => {
         res.status(200).json({
             message: 'item deleted'
         })

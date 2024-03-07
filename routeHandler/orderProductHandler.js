@@ -6,15 +6,35 @@ const OrderProduct = new mongoose.model("OrderProduct", orderSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
+// router.get('/', async (req, res) => {
+//     await OrderProduct.find().sort({ deliveryDate: 1 }).then((data) => {
+//         res.json(data)
+//     }).catch(err => {
+//         console.log(err);
+//         res.json({
+//             message: "error"
+//         })
+//     })
+// })
+
 router.get('/', async (req, res) => {
-    await OrderProduct.find().sort({ deliveryDate: 1 }).then((data) => {
-        res.json(data)
-    }).catch(err => {
-        console.log(err);
-        res.json({
-            message: "error"
-        })
-    })
+    try {
+        const page = parseInt(req.query.page) || 0;
+        const itemsPerPage = parseInt(req.query.itemsPerPage) || 3;
+
+        // calculate the skip value
+        const skip = page * itemsPerPage;
+
+        // Total number of blogs
+        const totalCount = await OrderProduct.countDocuments();
+
+        const data = await OrderProduct.find().skip(skip).limit(itemsPerPage).sort({ deliveryDate: 1 });
+        res.json({ data, totalCount });
+    } catch (err) {
+        res.status(500).json({
+            message: "error",
+        });
+    }
 })
 
 router.get('/:id', async (req, res) => {
