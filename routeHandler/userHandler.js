@@ -6,7 +6,7 @@ const UserInfo = new mongoose.model("User", userSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
-router.get('/', verifyLogin, async (req, res) => {
+router.get('/', async (req, res) => {
     await UserInfo.find().sort({ data: 'desc' }).then((data) => {
         res.json(data);
     }).catch(err => {
@@ -17,18 +17,6 @@ router.get('/', verifyLogin, async (req, res) => {
     })
 })
 
-// router.get('/:email', async (req, res) => {
-//     const email = req.params.email;
-//     await UserInfo.find({ email: email }).sort({ data: 'desc' }).then
-//         ((data) => {
-//             res.json(data)
-//         }).catch(err => {
-//             console.log(err);
-//             res.json({
-//                 message: 'error'
-//             })
-//         })
-// })
 
 
 router.post('/', async (req, res) => {
