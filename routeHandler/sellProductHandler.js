@@ -9,7 +9,7 @@ const verifyLogin = require("../middlewares/verifyLogin");
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 0;
-        const itemsPerPage = parseInt(req.query.itemsPerPage) || 3;
+        const itemsPerPage = parseInt(req.query.itemsPerPage);
 
         // calculate the skip value
         const skip = page * itemsPerPage;
