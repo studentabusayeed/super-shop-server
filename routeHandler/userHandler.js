@@ -17,6 +17,24 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.get('/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        console.log(email);
+
+        const userInfo = await UserInfo.findOne({ email: email });
+        // console.log(userInfo);
+
+        if (userInfo) {
+            res.json(userInfo);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 
 router.post('/', async (req, res) => {

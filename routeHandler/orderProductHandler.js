@@ -49,8 +49,50 @@ router.get('/:id', async (req, res) => {
         })
     })
 })
+router.get('/1/search', async (req, res) => {
+    const email = req.query.email;
+    const searchValue = req.query.searchValue;
+    const role = req.query.role;
+    // console.log(email, searchValue, role)
+    try {
+        let query = {};
+        if (role === 'employee') {
+            if (!email) {
+                return res.status(400).json({ message: 'Missing email for employee role' });
+            }
+            query.email = email;
+        }
+        else if (role === 'admin') {
+            query = {};
+        }
+        else {
+            return res.status(400).json({ message: 'Invalid user' });
+        }
+        if (searchValue && searchValue.trim() !== ' ') {
+            query.$or = [{ productCode: searchValue }];
+        }
+        const items = await OrderProduct.find(query);
+        console.log(searchValue, email, role)
+        if (!items || items.length === 0) {
+            return res.status(404).json({ message: 'No items found for the given email and search term' });
+        }
+        res.status(200).json(items);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Error occurred while searching for items"
+        });
+    }
+});
 
 router.post('/', async (req, res) => {
+    const data = req.body;
+    const query = { productCode: data?.productCode }
+    const existingProductCode = await OrderProduct.findOne(query)
+
+    if (existingProductCode) {
+        return res.json({ message: 'Product Code has alredy taken' })
+    }
     const NewOrderPorduct = new OrderProduct(req.body);
     await NewOrderPorduct.save().then((data) => {
 
