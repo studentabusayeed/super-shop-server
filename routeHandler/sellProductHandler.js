@@ -6,21 +6,59 @@ const SellProduct = new mongoose.model("SellProduct", sellSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
-router.get('/', async (req, res) => {
-    try {
+// router.get('/', async (req, res) => {
+//     try {
 
-        const data = await SellProduct.find().sort({ sellingDate: -1 });
-        res.json(data);
-    }
-    catch (err) {
+//         const data = await SellProduct.find().sort({ sellingDate: -1 });
+//         res.json(data);
+//     }
+//     catch (err) {
+//         res.status(500).json({
+//             message: "error",
+//         });
+//     }
+// })
+router.get('/', async (req, res) => {
+    const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
+    try {
+        let query = {};
+        if (role === 'employee') {
+            if (!email) {
+                return res.status(400).json({ message: 'Missing email for employee role' });
+            }
+            query.email = email;
+        }
+        else if (role === 'admin') {
+            query = {};
+        }
+        else {
+            return res.status(400).json({ message: 'Invalid user' });
+        }
+        if (searchValue && searchValue.trim() !== ' ') {
+            query.$or = [{ productCode: searchValue }];
+        }
+
+        const skip = currentPage * itemsPerPage;
+        console.log(skip);
+
+        const items = await SellProduct.find(query).skip(skip).limit(itemsPerPage).sort({ sellingDate: -1 });
+        if (!items || items.length === 0) {
+            return res.status(404).json({ message: 'No items found for the given email and search term' });
+        }
+        // console.log(items);
+
+        // Total number of blogs
+        const totalCount = await SellProduct.countDocuments();
+        res.status(200).json({ items, totalCount });
+    } catch (error) {
+        console.log(error);
         res.status(500).json({
-            message: "error",
+            message: "Error occurred while searching for items"
         });
     }
-})
+});
 router.get('/search', async (req, res) => {
     const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
-
 
     try {
         let query = {};
