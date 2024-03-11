@@ -41,7 +41,6 @@ router.get('/search', async (req, res) => {
         }
 
         const skip = currentPage * itemsPerPage;
-        console.log(skip);
 
         const items = await SellProduct.find(query).skip(skip).limit(itemsPerPage).sort({ sellingDate: -1 });
         if (!items || items.length === 0) {
