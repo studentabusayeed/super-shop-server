@@ -6,16 +6,55 @@ const OrderProduct = new mongoose.model("OrderProduct", orderSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
+// router.get('/', async (req, res) => {
+//     try {
+//         const data = await OrderProduct.find().sort({ deliveryDate: 1 });
+//         res.json(data);
+//     } catch (err) {
+//         res.status(500).json({
+//             message: "error",
+//         });
+//     }
+// })
 router.get('/', async (req, res) => {
+    const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
     try {
-        const data = await OrderProduct.find().sort({ deliveryDate: 1 });
-        res.json(data);
-    } catch (err) {
+        let query = {};
+        if (role === 'employee') {
+            if (!email) {
+                return res.status(400).json({ message: 'Missing email for employee role' });
+            }
+            query.email = email;
+        }
+        else if (role === 'admin') {
+            query = {};
+        }
+        else {
+            return res.status(400).json({ message: 'Invalid user' });
+        }
+        if (searchValue && searchValue.trim() !== ' ') {
+            query.$or = [{ productCode: searchValue }];
+        }
+
+        const skip = currentPage * itemsPerPage;
+        console.log(skip);
+
+        const items = await OrderProduct.find(query).skip(skip).limit(itemsPerPage).sort({ deliveryDate: -1 });
+        if (!items || items.length === 0) {
+            return res.status(404).json({ message: 'No items found for the given email and search term' });
+        }
+        // console.log(items);
+
+        // Total number of blogs
+        const totalCount = await OrderProduct.countDocuments();
+        res.status(200).json({ items, totalCount });
+    } catch (error) {
+        console.log(error);
         res.status(500).json({
-            message: "error",
+            message: "Error occurred while searching for items"
         });
     }
-})
+});
 
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
@@ -60,16 +99,16 @@ router.get('/1/search', async (req, res) => {
         if (!items || items.length === 0) {
             return res.status(404).json({ message: 'No items found for the given email and search term' });
         }
-            // Total number of blogs
-            const totalCount = await OrderProduct.countDocuments(query);
-            res.status(200).json({ items, totalCount });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({
-                message: 'Error occurred while searching for items',
-            });
-        }
-    });
+        // Total number of blogs
+        const totalCount = await OrderProduct.countDocuments(query);
+        res.status(200).json({ items, totalCount });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: 'Error occurred while searching for items',
+        });
+    }
+});
 
 router.post('/', async (req, res) => {
     const data = req.body;
