@@ -22,14 +22,15 @@ router.get('/', async (req, res) => {
     } catch (err) {
         res.status(500).json({
             message: "error",
-        });
-    }
+        });
+    }
 })
 router.get('/search', async (req, res) => {
-    const email = req.query.email;
-    const searchValue = req.query.searchValue;
-    const role = req.query.role;
+    // const email = req.query.email;
+    // const searchValue = req.query.searchValue;
+    // const role = req.query.role;
     // console.log(email, searchValue, role)
+    const { email, searchValue, role } = req.query;
     try {
         let query = {};
         if (role === 'employee') {
@@ -48,7 +49,7 @@ router.get('/search', async (req, res) => {
             query.$or = [{ productCode: searchValue }];
         }
         const items = await SellProduct.find(query);
-        console.log(searchValue, email, role)
+        console.log(items)
         if (!items || items.length === 0) {
             return res.status(404).json({ message: 'No items found for the given email and search term' });
         }

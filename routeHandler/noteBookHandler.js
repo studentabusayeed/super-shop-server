@@ -16,6 +16,13 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+})
 
 // Create a new Note
 router.post("/", async (req, res) => {
