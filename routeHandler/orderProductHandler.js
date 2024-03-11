@@ -6,17 +6,17 @@ const OrderProduct = new mongoose.model("OrderProduct", orderSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
-// router.get('/', async (req, res) => {
-//     try {
-//         const data = await OrderProduct.find().sort({ deliveryDate: 1 });
-//         res.json(data);
-//     } catch (err) {
-//         res.status(500).json({
-//             message: "error",
-//         });
-//     }
-// })
 router.get('/', async (req, res) => {
+    try {
+        const data = await OrderProduct.find().sort({ deliveryDate: 1 });
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({
+            message: "error",
+        });
+    }
+})
+router.get('/state', async (req, res) => {
     const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
     try {
         let query = {};
