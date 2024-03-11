@@ -8,28 +8,20 @@ const verifyLogin = require("../middlewares/verifyLogin");
 
 router.get('/', async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 0;
-        const itemsPerPage = parseInt(req.query.itemsPerPage);
 
-        // calculate the skip value
-        const skip = page * itemsPerPage;
-
-        // Total number of blogs
-        const totalCount = await SellProduct.countDocuments();
-
-        const data = await SellProduct.find().skip(skip).limit(itemsPerPage).sort({ sellingDate: -1 });
-        res.json({ data, totalCount });
-    } catch (err) {
+        const data = await SellProduct.find().sort({ sellingDate: -1 });
+        res.json(data);
+    }
+    catch (err) {
         res.status(500).json({
             message: "error",
-        });
-    }
+        });
+    }
 })
 router.get('/search', async (req, res) => {
-    const email = req.query.email;
-    const searchValue = req.query.searchValue;
-    const role = req.query.role;
-    // console.log(email, searchValue, role)
+    const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
+
+
     try {
         let query = {};
         if (role === 'employee') {
@@ -47,12 +39,19 @@ router.get('/search', async (req, res) => {
         if (searchValue && searchValue.trim() !== ' ') {
             query.$or = [{ productCode: searchValue }];
         }
-        const items = await SellProduct.find(query);
-        console.log(searchValue, email, role)
+
+        const skip = currentPage * itemsPerPage;
+        console.log(skip);
+
+        const items = await SellProduct.find(query).skip(skip).limit(itemsPerPage).sort({ sellingDate: -1 });
         if (!items || items.length === 0) {
             return res.status(404).json({ message: 'No items found for the given email and search term' });
         }
-        res.status(200).json(items);
+        // console.log(items);
+
+        // Total number of blogs
+        const totalCount = await SellProduct.countDocuments();
+        res.status(200).json({ items, totalCount });
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -78,7 +77,6 @@ router.post('/', async (req, res) => {
     const data = req.body;
     const query = { productCode: data?.productCode }
     const existingProductCode = await SellProduct.findOne(query)
-    console.log(existingProductCode)
     if (existingProductCode) {
         return res.json({ message: 'Product Code has alredy taken' })
     }

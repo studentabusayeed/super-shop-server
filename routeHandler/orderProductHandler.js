@@ -6,17 +6,6 @@ const OrderProduct = new mongoose.model("OrderProduct", orderSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
-// router.get('/', async (req, res) => {
-//     await OrderProduct.find().sort({ deliveryDate: 1 }).then((data) => {
-//         res.json(data)
-//     }).catch(err => {
-//         console.log(err);
-//         res.json({
-//             message: "error"
-//         })
-//     })
-// })
-
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 0;
@@ -49,11 +38,9 @@ router.get('/:id', async (req, res) => {
         })
     })
 })
+
 router.get('/1/search', async (req, res) => {
-    const email = req.query.email;
-    const searchValue = req.query.searchValue;
-    const role = req.query.role;
-    // console.log(email, searchValue, role)
+    const { email, searchValue, role, currentPage, itemsPerPage, status } = req.query;
     try {
         let query = {};
         if (role === 'employee') {
@@ -61,29 +48,37 @@ router.get('/1/search', async (req, res) => {
                 return res.status(400).json({ message: 'Missing email for employee role' });
             }
             query.email = email;
-        }
-        else if (role === 'admin') {
+        } else if (role === 'admin') {
             query = {};
-        }
-        else {
+        } else {
             return res.status(400).json({ message: 'Invalid user' });
         }
+
         if (searchValue && searchValue.trim() !== ' ') {
             query.$or = [{ productCode: searchValue }];
         }
-        const items = await OrderProduct.find(query);
-        console.log(searchValue, email, role)
+
+        if (status) {
+            query.status = status;
+        }
+
+        const skip = currentPage * itemsPerPage;
+
+        const items = await OrderProduct.find(query).skip(skip).limit(itemsPerPage).sort({ deliveryDate: -1 });
+
         if (!items || items.length === 0) {
             return res.status(404).json({ message: 'No items found for the given email and search term' });
         }
-        res.status(200).json(items);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Error occurred while searching for items"
-        });
-    }
-});
+            // Total number of blogs
+            const totalCount = await OrderProduct.countDocuments(query);
+            res.status(200).json({ items, totalCount });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: 'Error occurred while searching for items',
+            });
+        }
+    });
 
 router.post('/', async (req, res) => {
     const data = req.body;
