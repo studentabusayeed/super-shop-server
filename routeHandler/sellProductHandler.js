@@ -6,19 +6,18 @@ const SellProduct = new mongoose.model("SellProduct", sellSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
 
 
-// router.get('/', async (req, res) => {
-//     try {
-
-//         const data = await SellProduct.find().sort({ sellingDate: -1 });
-//         res.json(data);
-//     }
-//     catch (err) {
-//         res.status(500).json({
-//             message: "error",
-//         });
-//     }
-// })
 router.get('/', async (req, res) => {
+    try {
+        const data = await SellProduct.find().sort({ sellingDate: -1 });
+        res.json(data);
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "error",
+        });
+    }
+})
+router.get('/state', async (req, res) => {
     const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
     try {
         let query = {};
