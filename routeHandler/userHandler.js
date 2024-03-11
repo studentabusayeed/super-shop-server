@@ -20,10 +20,8 @@ router.get('/', verifyLogin, async (req, res) => {
 router.get('/:email', async (req, res) => {
     try {
         const { email } = req.params;
-        console.log(email);
 
         const userInfo = await UserInfo.findOne({ email: email });
-        // console.log(userInfo);
 
         if (userInfo) {
             res.json(userInfo);
