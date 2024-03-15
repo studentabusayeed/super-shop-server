@@ -44,6 +44,7 @@ const sellSchema = require("./routeHandler/sellProductHandler");
 const orderSchema = require("./routeHandler/orderProductHandler");
 const userHandler = require("./routeHandler/userHandler");
 const noteHandler = require("./routeHandler/noteBookHandler");
+const categoryHandler = require("./routeHandler/categoryHandler");
 
 
 app.get("/", (req, res) => {
@@ -55,6 +56,7 @@ app.use("/sellProduct", sellSchema);
 app.use("/orderProduct", orderSchema);
 app.use("/user", userHandler);
 app.use("/noteBooks", noteHandler);
+app.use("/category", categoryHandler);
 
 
 app.get("/", (req, res) => {
