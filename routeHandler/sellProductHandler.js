@@ -96,6 +96,18 @@ router.get('/search', async (req, res) => {
     }
 });
 
+router.get('/:category', async (req, res) => {
+    const category = req.params.category;
+    const query = { category: category };
+    await SellProduct.find(query).sort({ sellingDate: -1 }).then((data) => {
+        res.json(data)
+    }).catch(err => {
+        console.log(err);
+        res.json({
+            message: "error"
+        })
+    })
+})
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new Object(id) };
