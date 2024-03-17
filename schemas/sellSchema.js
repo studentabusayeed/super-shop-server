@@ -6,8 +6,14 @@ const sellSchema = mongoose.Schema({
         required: true,
     },
     quantity: {
-        type: String,
+        type: Number,
         required: true,
+        validate: {
+            validator: function(value) {
+                return value >= 0;
+            },
+            message: 'Quantity must be a non-negative number'
+        }
     },
     price: {
         type: Number,

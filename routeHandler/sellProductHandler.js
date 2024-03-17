@@ -109,6 +109,22 @@ router.get('/:id', async (req, res) => {
     })
 })
 
+
+// router.get("/:id", async (req, res) => {
+//     try {
+//       const sellId = req.params.id;
+//       const sellProduct = await SellProduct.findById(sellId);
+//       if (!sellProduct) {
+//         return res.status(404).json({
+//           message: "NoteBook not found!",
+//         });
+//       }
+//       res.json(sellProduct);
+//     } catch (err) {
+//       res.status(500).send("Server Error");
+//     }
+//   });
+
 router.post('/', async (req, res) => {
     const data = req.body;
     const query = { productCode: data?.productCode }
@@ -148,6 +164,27 @@ router.delete('/:id', async (req, res) => {
         }
     })
 })
+
+
+// Update a sell product
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const updatedProduct = await SellProduct.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        res.json(updatedProduct);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
 
 
 module.exports = router;
