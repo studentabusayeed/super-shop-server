@@ -96,7 +96,21 @@ router.get('/search', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:category', async (req, res) => {
+    const category = req.params.category;
+    const query = { category: category };
+    await SellProduct.find(query).sort({ sellingDate: -1 }).then((data) => {
+        res.json(data)
+    }).catch(err => {
+        console.log(err);
+        res.json({
+            message: "error"
+        })
+    })
+})
+
+
+router.get('/1/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new Object(id) };
     await SellProduct.findOne(query).sort({ sellingDate: -1 }).then((data) => {
@@ -148,6 +162,29 @@ router.delete('/:id', async (req, res) => {
         }
     })
 })
+
+
+// Update a sell product
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const updatedProduct = await SellProduct.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        res.json(updatedProduct);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
+
+
 
 
 module.exports = router;
