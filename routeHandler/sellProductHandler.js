@@ -191,6 +191,10 @@ router.get('/1/filter', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+})
+
+
+router.get('/1/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new Object(id) };
     await SellProduct.findOne(query).sort({ sellingDate: -1 }).then((data) => {
@@ -202,7 +206,6 @@ router.get('/:id', async (req, res) => {
         })
     })
 })
-
 
 router.post('/', async (req, res) => {
     const data = req.body;
@@ -262,6 +265,8 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+
 
 
 
