@@ -57,22 +57,22 @@ router.get('/state', async (req, res) => {
     }
 });
 router.get('/search', async (req, res) => {
-    const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
+    const { searchValue, currentPage, itemsPerPage } = req.query;
 
     try {
         let query = {};
-        if (role === 'employee') {
-            if (!email) {
-                return res.status(400).json({ message: 'Missing email for employee role' });
-            }
-            query.email = email;
-        }
-        else if (role === 'admin') {
-            query = {};
-        }
-        else {
-            return res.status(400).json({ message: 'Invalid user' });
-        }
+        // if (role === 'employee') {
+        //     if (!email) {
+        //         return res.status(400).json({ message: 'Missing email for employee role' });
+        //     }
+        //     query.email = email;
+        // }
+        // else if (role === 'admin') {
+        //     query = {};
+        // }
+        // else {
+        //     return res.status(400).json({ message: 'Invalid user' });
+        // }
         if (searchValue && searchValue.trim() !== ' ') {
             query.$or = [{ productCode: searchValue }];
         }
@@ -95,9 +95,8 @@ router.get('/search', async (req, res) => {
         });
     }
 });
-
 router.get('/:category', async (req, res) => {
-    const category = req.params.category;
+    const { category } = req.params;
     const query = { category: category };
     await SellProduct.find(query).sort({ sellingDate: -1 }).then((data) => {
         res.json(data)
@@ -107,6 +106,91 @@ router.get('/:category', async (req, res) => {
             message: "error"
         })
     })
+});
+// router.get('/1/filter', async (req, res) => {
+//     const { categoryName, filterName } = req.query;
+//     let query = { category: categoryName };
+//     // const finding = await SellProduct.find(query);
+//     try {
+//         if (filterName === 'weekly') {
+//             let days = 7;
+//             console.log(days)
+//             if (!isNaN(days)) {
+//                 const startDate = new Date();
+//                 console.log(startDate)
+//                 startDate.setDate(startDate.getDate() - days);
+//                 // query = { ...query, createdAt: { $gte: startDate } };
+//                 finding.sellingDate = { ...query, $gte: startDate };
+//             }
+//         }
+//         else if (filterName === 'monthly') {
+//             let days = 30;
+//             if (!isNaN(days)) {
+//                 const startDate = new Date();
+//                 startDate.setDate(startDate.getDate() - days);
+//                 finding.sellingDate = { ...query, $gte: startDate };
+//             }
+//         }
+//         else if (filterName === 'yearly') {
+//             let days = 365;
+//             if (!isNaN(days)) {
+//                 const startDate = new Date();
+//                 startDate.setDate(startDate.getDate() - days);
+//                 finding.sellingDate = { ...query, $gte: startDate };
+//             }
+//         }
+//         else{
+
+//         }
+//         const data = await SellProduct.find(query);
+//         console.log(data);
+//         res.json(data); 
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: "Error retrieving sell products" });
+//     }
+
+//     // await SellProduct.find(query).sort({ sellingDate: -1 }).then((data) => {
+//     //     res.json(data)
+//     // }).catch(err => {
+//     //     console.log(err);
+//     //     res.json({
+//     //         message: "error"
+//     //     })
+//     // })
+// });
+
+router.get('/1/filter', async (req, res) => {
+    const { categoryName, filterName } = req.query;
+    let query = { category: categoryName };
+
+    try {
+        if (filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
+            let days;
+            if (filterName === 'weekly') {
+                days = 7;
+            } else if (filterName === 'monthly') {
+                days = 30;
+            } else if (filterName === 'yearly') {
+                days = 365;
+            }
+
+            if (!isNaN(days)) {
+                const startDate = new Date(Date.now());
+                startDate.setDate(startDate.getDate() - days);
+                query.sellingDate = { $gte: startDate };
+            }
+        }
+
+        const data = await SellProduct.find(query);
+        res.json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error retrieving sell products" });
+    }
+});
+
+router.get('/:id', async (req, res) => {
 })
 
 

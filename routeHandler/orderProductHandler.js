@@ -110,6 +110,37 @@ router.get('/1/search', async (req, res) => {
     }
 });
 
+router.get('/1/filter', async (req, res) => {
+    const { filterName } = req.query;
+    let query = {};
+    console.log(filterName, query)
+    try {
+        if (filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
+            let days;
+            if (filterName === 'weekly') {
+                days = 7;
+            } else if (filterName === 'monthly') {
+                days = 30;
+            } else if (filterName === 'yearly') {
+                days = 365;
+            }
+
+            if (!isNaN(days)) {
+                const startDate = new Date();
+                startDate.setDate(startDate.getDate() - days);
+                query.deliveryDate = { $gte: startDate };
+            }
+        }
+
+        const data = await OrderProduct.find(query);
+        console.log(data);
+        res.json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error retrieving sell products" });
+    }
+});
+
 router.post('/', async (req, res) => {
     const data = req.body;
     const query = { productCode: data?.productCode }
