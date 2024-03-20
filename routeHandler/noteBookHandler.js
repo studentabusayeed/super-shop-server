@@ -17,10 +17,13 @@ router.get("/", async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  const query = { _id: new Object(id) };
   try {
-    
+    const NoteBooks = await NoteBook.findOne(query);
+    res.json(NoteBooks);
   } catch (error) {
-    
+    res.status(500).send("Server Error");
   }
 })
 
