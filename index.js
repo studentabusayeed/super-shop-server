@@ -45,6 +45,8 @@ const orderSchema = require("./routeHandler/orderProductHandler");
 const userHandler = require("./routeHandler/userHandler");
 const noteHandler = require("./routeHandler/noteBookHandler");
 const categoryHandler = require("./routeHandler/categoryHandler");
+const cartsHandler = require('./routeHandler/cartsHandler');
+const soldHandler = require('./routeHandler/soldHandler');
 
 
 app.get("/", (req, res) => {
@@ -57,6 +59,8 @@ app.use("/orderProduct", orderSchema);
 app.use("/user", userHandler);
 app.use("/noteBooks", noteHandler);
 app.use("/category", categoryHandler);
+app.use("/carts", cartsHandler);
+app.use("/soldItems", soldHandler);
 
 
 app.get("/", (req, res) => {

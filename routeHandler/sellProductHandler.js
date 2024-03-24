@@ -190,10 +190,6 @@ router.get('/1/filter', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
-})
-
-
 router.get('/1/:id', async (req, res) => {
     const id = req.params.id;
     const query = { _id: new Object(id) };
@@ -247,6 +243,21 @@ router.delete('/:id', async (req, res) => {
     })
 })
 
+router.patch('/cartUpdate', async (req, res) => {
+    const { items } = req.body;
+    // console.log(items)
+
+    for (const item of items) {
+        const { code, quantity } = item;
+        // console.log(code)
+        // console.log(quantity)
+        const product = await SellProduct.findOne({ productCode: code })
+        const newQuantity = product?.quantity - quantity;
+        const filter = { productCode: code }
+        const updatedDoc = { quantity: newQuantity }
+        await SellProduct.updateOne(filter, updatedDoc)
+    }
+})
 
 // Update a sell product
 router.put('/:id', async (req, res) => {
