@@ -113,11 +113,12 @@ router.get('/1/search', async (req, res) => {
 router.get('/1/filter', async (req, res) => {
     const { filterName } = req.query;
     let query = {};
-    console.log(filterName, query)
     try {
-        if (filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
+        if (filterName === 'daily' || filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
             let days;
-            if (filterName === 'weekly') {
+            if (filterName === 'daily') {
+                days = 1;
+            } else if (filterName === 'weekly') {
                 days = 7;
             } else if (filterName === 'monthly') {
                 days = 30;
@@ -131,7 +132,7 @@ router.get('/1/filter', async (req, res) => {
                 query.deliveryDate = { $gte: startDate };
             }
         }
-
+        console.log(query)
         const data = await OrderProduct.find(query);
         console.log(data);
         res.json(data);

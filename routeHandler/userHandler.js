@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
             message: 'error'
         })
     })
-})
+});
 
 router.get('/:email', async (req, res) => {
     try {
@@ -49,10 +49,6 @@ router.get('/:email', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-
-
-
-
 
 router.post('/', async (req, res) => {
     const NewUserInfo = new UserInfo(req.body);
