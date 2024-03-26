@@ -132,9 +132,9 @@ router.get('/1/filter', async (req, res) => {
                 query.deliveryDate = { $gte: startDate };
             }
         }
-        console.log(query)
+        // console.log(query)
         const data = await OrderProduct.find(query);
-        console.log(data);
+        // console.log(data);
         res.json(data);
     } catch (error) {
         console.log(error);
