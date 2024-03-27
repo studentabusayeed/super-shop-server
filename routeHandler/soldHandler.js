@@ -16,10 +16,11 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/:category', async (req, res) => {
+router.get('/:categoryName', async (req, res) => {
+    const { categoryName } = req.params;
+    // console.log(categoryName)
+    let query = { category: categoryName };
     try {
-        const { category } = req.params;
-        const query = { category: category };
         await SoldItems.find(query).then((data) => {
             res.json(data)
         })
@@ -33,7 +34,7 @@ router.get('/:category', async (req, res) => {
 
 router.get('/1/state', async (req, res) => {
     const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
-    console.log(email,currentPage);
+    console.log(email, currentPage);
     try {
         let query = {};
         if (role === 'employee') {
@@ -93,9 +94,9 @@ router.get('/1/filter', async (req, res) => {
                 const startDate = new Date(Date.now());
                 startDate.setDate(startDate.getDate() - days);
                 query.sellingDate = { $gte: startDate };
+                console.log(query)
             }
         }
-
         const data = await SoldItems.find(query);
         res.json(data);
     } catch (error) {

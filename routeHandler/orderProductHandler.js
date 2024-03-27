@@ -15,8 +15,26 @@ router.get("/", async (req, res) => {
     });
   }
 });
-router.get("/state", async (req, res) => {
-  const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
+
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new Object(id) };
+  await OrderProduct.findOne(query)
+    .sort({ deliveryDate: 1 })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        message: "error",
+      });
+    });
+});
+
+router.get("/1/search", async (req, res) => {
+  const { email, searchValue, role, currentPage, itemsPerPage, status } =
+    req.query;
   try {
     let query = {};
     if (role === "employee") {
@@ -31,32 +49,116 @@ router.get("/state", async (req, res) => {
     } else {
       return res.status(400).json({ message: "Invalid user" });
     }
+
     if (searchValue && searchValue.trim() !== " ") {
       query.$or = [{ productCode: searchValue }];
     }
 
+    if (status) {
+      query.status = status;
+    }
+
     const skip = currentPage * itemsPerPage;
-    console.log(skip);
 
     const items = await OrderProduct.find(query)
       .skip(skip)
       .limit(itemsPerPage)
       .sort({ deliveryDate: -1 });
+
     if (!items || items.length === 0) {
       return res.status(404).json({
         message: "No items found for the given email and search term",
       });
     }
-    // console.log(items);
-
     // Total number of blogs
-    const totalCount = await OrderProduct.countDocuments();
+    const totalCount = await OrderProduct.countDocuments(query);
     res.status(200).json({ items, totalCount });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       message: "Error occurred while searching for items",
     });
+  }
+});
+
+// router.get('/1/filter', async (req, res) => {
+//     const { filterName } = req.query;
+//     // console.log(filterName)
+//     try {
+//         let query = {};
+//         if (filterName === 'daily' || filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
+//             let days;
+//             if (filterName === 'daily') {
+//                 days = 1;
+//             } else if (filterName === 'weekly') {
+//                 days = 7;
+//             } else if (filterName === 'monthly') {
+//                 days = 30;
+//             } else if (filterName === 'yearly') {
+//                 days = 365;
+//             }
+
+//             if (!isNaN(days)) {
+//                 const startDate = new Date();
+//                 startDate.setDate(startDate.getDate() - days);
+//                 query.deliveryDate = { $gte: startDate };
+//                 console.log(query)
+//             }
+//         }
+//         const data = await OrderProduct.find(query);
+//         res.json(data);
+//         // console.log(data);
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: "Error retrieving sell products" });
+//     }
+// });
+
+router.get("/1/filter", async (req, res) => {
+  const { filterName } = req.query;
+
+  try {
+    let query = {};
+
+    if (filterName === "daily") {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+      query.deliveryDate = { $gte: startDate, $lte: endDate };
+    } else if (filterName === "weekly") {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + (7 - endDate.getDay()));
+      endDate.setHours(23, 59, 59, 999);
+      query.deliveryDate = { $gte: startDate, $lte: endDate };
+    } else if (filterName === "monthly") {
+      const startDate = new Date();
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+      endDate.setDate(0);
+      endDate.setHours(23, 59, 59, 999);
+      query.deliveryDate = { $gte: startDate, $lte: endDate };
+    } else if (filterName === "yearly") {
+      const startDate = new Date();
+      startDate.setMonth(0);
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 1);
+      endDate.setDate(0);
+      endDate.setHours(23, 59, 59, 999);
+      query.deliveryDate = { $gte: startDate, $lte: endDate };
+    }
+
+    const data = await OrderProduct.find(query);
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving sell products" });
   }
 });
 
