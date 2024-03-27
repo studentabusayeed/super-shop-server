@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:categoryName', async (req, res) => {
     const { categoryName } = req.params;
-    console.log(categoryName)
+    // console.log(categoryName)
     let query = { category: categoryName };
     try {
         await SoldItems.find(query).then((data) => {
@@ -94,9 +94,9 @@ router.get('/1/filter', async (req, res) => {
                 const startDate = new Date(Date.now());
                 startDate.setDate(startDate.getDate() - days);
                 query.sellingDate = { $gte: startDate };
+                console.log(query)
             }
         }
-
         const data = await SoldItems.find(query);
         res.json(data);
     } catch (error) {
