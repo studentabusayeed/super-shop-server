@@ -34,6 +34,37 @@ router.get('/:email', async (req, res) => {
     }
 });
 
+router.get('/1/state', async (req, res) => {
+    const { role, currentPage, itemsPerPage } = req.query;
+    console.log(role, currentPage);
+    try {
+        let query = {};
+        if (role === 'employee' || role === 'user') {
+            return res.status(400).json({ message: 'Invalid user' });
+        }
+        else if (role === 'admin') {
+            query = {};
+        }
+
+        const skip = currentPage * itemsPerPage;
+
+        const items = await UserInfo.find(query).skip(skip).limit(itemsPerPage);
+        if (!items || items.length === 0) {
+            return res.status(404).json({ message: 'No items found for the given email and search term' });
+        }
+        // console.log(items);
+
+        // Total number of blogs
+        const totalCount = await UserInfo.countDocuments();
+        res.status(200).json({ items, totalCount });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Error occurred while searching for items"
+        });
+    }
+});
+
 router.get('/:email', async (req, res) => {
     const { email } = req.params;
 
