@@ -22,6 +22,9 @@ const cartsSchema = mongoose.Schema({
     },
     title:{
         type: String
+    },
+    email:{
+        type: String
     }
 })
 

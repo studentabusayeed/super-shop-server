@@ -6,8 +6,10 @@ const Carts = new mongoose.model('CartsData', cartsSchema);
 
 
 router.get('/', async (req, res) => {
+    const { email } = req.query;
+    const query = {email: email};
     try {
-        const data = await Carts.find();
+        const data = await Carts.find(query);
         res.json(data);
     } catch (err) {
         res.status(500).json({
