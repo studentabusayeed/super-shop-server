@@ -107,67 +107,17 @@ router.get('/:category', async (req, res) => {
         })
     })
 });
-// router.get('/1/filter', async (req, res) => {
-//     const { categoryName, filterName } = req.query;
-//     let query = { category: categoryName };
-//     // const finding = await SellProduct.find(query);
-//     try {
-//         if (filterName === 'weekly') {
-//             let days = 7;
-//             console.log(days)
-//             if (!isNaN(days)) {
-//                 const startDate = new Date();
-//                 console.log(startDate)
-//                 startDate.setDate(startDate.getDate() - days);
-//                 // query = { ...query, createdAt: { $gte: startDate } };
-//                 finding.sellingDate = { ...query, $gte: startDate };
-//             }
-//         }
-//         else if (filterName === 'monthly') {
-//             let days = 30;
-//             if (!isNaN(days)) {
-//                 const startDate = new Date();
-//                 startDate.setDate(startDate.getDate() - days);
-//                 finding.sellingDate = { ...query, $gte: startDate };
-//             }
-//         }
-//         else if (filterName === 'yearly') {
-//             let days = 365;
-//             if (!isNaN(days)) {
-//                 const startDate = new Date();
-//                 startDate.setDate(startDate.getDate() - days);
-//                 finding.sellingDate = { ...query, $gte: startDate };
-//             }
-//         }
-//         else{
-
-//         }
-//         const data = await SellProduct.find(query);
-//         console.log(data);
-//         res.json(data); 
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: "Error retrieving sell products" });
-//     }
-
-//     // await SellProduct.find(query).sort({ sellingDate: -1 }).then((data) => {
-//     //     res.json(data)
-//     // }).catch(err => {
-//     //     console.log(err);
-//     //     res.json({
-//     //         message: "error"
-//     //     })
-//     // })
-// });
 
 router.get('/1/filter', async (req, res) => {
     const { categoryName, filterName } = req.query;
     let query = { category: categoryName };
-
+    console.log(query, filterName);
     try {
-        if (filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
+        if (filterName === 'daily' || filterName === 'weekly' || filterName === 'monthly' || filterName === 'yearly') {
             let days;
-            if (filterName === 'weekly') {
+            if (filterName === 'daily') {
+                days = 1;
+            } else if (filterName === 'weekly') {
                 days = 7;
             } else if (filterName === 'monthly') {
                 days = 30;
@@ -176,14 +126,14 @@ router.get('/1/filter', async (req, res) => {
             }
 
             if (!isNaN(days)) {
-                const startDate = new Date(Date.now());
-                startDate.setDate(startDate.getDate() - days);
+                const startDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
                 query.sellingDate = { $gte: startDate };
             }
         }
 
         const data = await SellProduct.find(query);
         res.json(data);
+        console.log(data);
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Error retrieving sell products" });
