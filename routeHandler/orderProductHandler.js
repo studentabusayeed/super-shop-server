@@ -75,54 +75,54 @@ router.get("/:id", async (req, res) => {
     });
 });
 
-router.get("/1/search", async (req, res) => {
-  const { email, searchValue, role, currentPage, itemsPerPage, status } =
-    req.query;
-  try {
-    let query = {};
-    if (role === "employee") {
-      if (!email) {
-        return res
-          .status(400)
-          .json({ message: "Missing email for employee role" });
-      }
-      query.email = email;
-    } else if (role === "admin") {
-      query = {};
-    } else {
-      return res.status(400).json({ message: "Invalid user" });
-    }
+// router.get("/1/search", async (req, res) => {
+//   const { email, searchValue, role, currentPage, itemsPerPage, status } =
+//     req.query;
+//   try {
+//     let query = {};
+//     if (role === "employee") {
+//       if (!email) {
+//         return res
+//           .status(400)
+//           .json({ message: "Missing email for employee role" });
+//       }
+//       query.email = email;
+//     } else if (role === "admin") {
+//       query = {};
+//     } else {
+//       return res.status(400).json({ message: "Invalid user" });
+//     }
 
-    if (searchValue && searchValue.trim() !== " ") {
-      query.$or = [{ productCode: searchValue }];
-    }
+//     if (searchValue && searchValue.trim() !== " ") {
+//       query.$or = [{ productCode: searchValue }];
+//     }
 
-    if (status) {
-      query.status = status;
-    }
+//     if (status) {
+//       query.status = status;
+//     }
 
-    const skip = currentPage * itemsPerPage;
+//     const skip = currentPage * itemsPerPage;
 
-    const items = await OrderProduct.find(query)
-      .skip(skip)
-      .limit(itemsPerPage)
-      .sort({ deliveryDate: -1 });
+//     const items = await OrderProduct.find(query)
+//       .skip(skip)
+//       .limit(itemsPerPage)
+//       .sort({ deliveryDate: -1 });
 
-    if (!items || items.length === 0) {
-      return res.status(404).json({
-        message: "No items found for the given email and search term",
-      });
-    }
-    // Total number of blogs
-    const totalCount = await OrderProduct.countDocuments(query);
-    res.status(200).json({ items, totalCount });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error occurred while searching for items",
-    });
-  }
-});
+//     if (!items || items.length === 0) {
+//       return res.status(404).json({
+//         message: "No items found for the given email and search term",
+//       });
+//     }
+//     // Total number of blogs
+//     const totalCount = await OrderProduct.countDocuments(query);
+//     res.status(200).json({ items, totalCount });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Error occurred while searching for items",
+//     });
+//   }
+// });
 
 // router.get('/1/filter', async (req, res) => {
 //     const { filterName } = req.query;
@@ -222,21 +222,15 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/1/search", async (req, res) => {
-  const { email, searchValue, role, currentPage, itemsPerPage, status } =
+  const { email, searchValue, currentPage, itemsPerPage, status } =
     req.query;
   try {
     let query = {};
-    if (role === "employee") {
-      if (!email) {
-        return res
-          .status(400)
-          .json({ message: "Missing email for employee role" });
-      }
-      query.email = email;
-    } else if (role === "admin") {
-      query = {};
-    } else {
+    if (!email) {
       return res.status(400).json({ message: "Invalid user" });
+    }
+    else {
+      query = {};
     }
 
     if (searchValue && searchValue.trim() !== " ") {
