@@ -130,6 +130,23 @@ router.post('/', async (req, res) => {
 
 })
 
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new Object(id) }
+    await SoldItems.deleteOne(query).then(() => {
+        res.status(200).json({
+            message: 'item deleted'
+        })
+    }).catch((err) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({
+                message: 'error'
+            })
+        }
+    })
+})
+
 
 
 module.exports = router;
